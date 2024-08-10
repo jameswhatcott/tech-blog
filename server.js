@@ -65,6 +65,7 @@ app.use((err, req, res, next) => {
   res.status(500).render('500', { layout: false });
 });
 
+
 // Start server
 sequelize.sync({ alter: true }).then(() => {
   app.listen(PORT, () =>
