@@ -6,7 +6,7 @@
   </head>
   <body>
     <nav>
-  <a href="/">Home</a>
+  <a href="/homepage">Home</a>
   <a href="{{#if loggedIn}}/dashboard{{else}}/login{{/if}}">Dashboard</a>
 
   {{#if loggedIn}}
@@ -14,10 +14,7 @@
   {{else}}
     <a href="/login">Login</a>
   {{/if}}
-  
-  <h1>The Tech Blog</h1>
 </nav>
-
     {{{body}}}
     {{#if loggedIn}}
   <script src="/public/js/logout.js"></script>
