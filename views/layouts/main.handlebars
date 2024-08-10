@@ -6,15 +6,21 @@
   </head>
   <body>
     <nav>
-      <a href="/">Home</a>
-      <a href="/dashboard">Dashboard</a>
-      {{#if loggedIn}}
+  <a href="/">Home</a>
+  <a href="{{#if loggedIn}}/dashboard{{else}}/login{{/if}}">Dashboard</a>
+
+  {{#if loggedIn}}
     <button id="logout" class="btn-no-style">Logout</button>
-    {{else}}
+  {{else}}
     <a href="/login">Login</a>
-    {{/if}}
-    <h1>The Tech Blog</h1>
-    </nav>
+  {{/if}}
+  
+  <h1>The Tech Blog</h1>
+</nav>
+
     {{{body}}}
+    {{#if loggedIn}}
+  <script src="/public/js/logout.js"></script>
+  {{/if}}
   </body>
 </html>
