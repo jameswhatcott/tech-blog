@@ -2,8 +2,11 @@ const path = require('path');
 const express = require('express');
 const session = require('express-session');
 const exphbs = require('express-handlebars');
-// Initializes Sequelize with session store
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const cors = require('cors');
+require('dotenv').config();
 
 const routes = require('./controllers');
 const sequelize = require('./config/connection');
@@ -12,23 +15,17 @@ const helpers = require('./utils/helpers');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Sets up session and connect to our Sequelize db
+// Session setup
 const sess = {
-  secret: 'Super secret secret',
-  // Express session will use cookies by default, but we can specify options for those cookies by adding a cookies property to our session options.
+  secret: process.env.SESSION_SECRET || 'Super secret secret',
   cookie: {
-    // maxAge sets the maximum age for the cookie to be valid. Here, the cookie (and session) will expire after one hour. The time should be given in milliseconds.
     maxAge: 60 * 60 * 1000,
-    // httpOnly tells express-session to only store session cookies when the protocol being used to connect to the server is HTTP.
     httpOnly: true,
-    // secure tells express-session to only initialize session cookies when the protocol being used is HTTPS. Having this set to true, and running a server without encryption will result in the cookies not showing up in your developer console.
     secure: false,
-    // sameSite tells express-session to only initialize session cookies when the referrer provided by the client matches the domain out server is hosted from.
     sameSite: 'strict',
   },
   resave: false,
   saveUninitialized: true,
-  // Sets up session store
   store: new SequelizeStore({
     db: sequelize,
   }),
@@ -36,21 +33,41 @@ const sess = {
 
 app.use(session(sess));
 
+// Handlebars setup
 const hbs = exphbs.create({ helpers });
-
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 
+// Middleware setup
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(helmet());
+app.use(cors());
 
+// Rate limiting
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+});
+app.use(apiLimiter);
+
+// Routes
 app.use(routes);
 
-sequelize.sync({ force: false }).then(() => {
+// Error handling
+app.use((req, res, next) => {
+  res.status(404).render('404', { layout: false });
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).render('500', { layout: false });
+});
+
+// Start server
+sequelize.sync({ alter: true }).then(() => {
   app.listen(PORT, () =>
-    console.log(
-      `\nServer running on port ${PORT}. Visit http://localhost:${PORT} and create an account!`
-    )
+    console.log(`\nServer running on port ${PORT}. Visit http://localhost:${PORT} and create an account!`)
   );
 });
