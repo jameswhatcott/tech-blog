@@ -6,13 +6,15 @@
   </head>
   <body>
     <nav>
-  <a href="/homepage">Home</a>
-  <a href="{{#if loggedIn}}/dashboard{{else}}/login{{/if}}">Dashboard</a>
+  <a href="/">Home</a>
+<a href="{{#if loggedIn}}/dashboard{{else}}/login{{/if}}">Dashboard</a>
+
 
   {{#if loggedIn}}
     <button id="logout" class="btn-no-style">Logout</button>
   {{else}}
     <a href="/login">Login</a>
+    <a href="/signup">Sign Up</a>
   {{/if}}
 </nav>
     {{{body}}}
