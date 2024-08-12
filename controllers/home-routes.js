@@ -7,14 +7,15 @@ router.get('/', async (req, res) => {
     const postData = await Post.findAll({
       include: [{ model: User, attributes: ['username'] }],
     });
+
     const posts = postData.map((post) => post.get({ plain: true }));
-    console.log(posts); // Check the structure of the posts array
     res.render('homepage', { posts, loggedIn: req.session.loggedIn });
   } catch (err) {
-    console.error(err);
+    console.error('Error occurred in GET /:', err); // Log the detailed error
     res.status(500).json(err);
   }
 });
+
 
 
 
