@@ -8,11 +8,15 @@ router.get('/', async (req, res) => {
       include: [{ model: User, attributes: ['username'] }],
     });
     const posts = postData.map((post) => post.get({ plain: true }));
+    console.log(posts); // Check the structure of the posts array
     res.render('homepage', { posts, loggedIn: req.session.loggedIn });
   } catch (err) {
+    console.error(err);
     res.status(500).json(err);
   }
 });
+
+
 
 // Sign Up
 

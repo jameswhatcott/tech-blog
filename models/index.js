@@ -1,3 +1,6 @@
+const Sequelize = require('sequelize');
+const sequelize = require('../config/connection');
+
 const User = require('./User');
 const Post = require('./Post');
 
@@ -10,4 +13,4 @@ Post.belongsTo(User, {
   foreignKey: 'userId',
 });
 
-module.exports = { User, Post };
+module.exports = { User, Post, sequelize };
